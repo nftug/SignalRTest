@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRTest.Server", "SignalRTest.Server\SignalRTest.Server.csproj", "{9E49C80C-3967-4862-BFB8-81FE0FC1ADE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRTest.Client", "SignalRTest.Client\SignalRTest.Client.csproj", "{04C2FBA4-10BF-4398-818E-0229332711CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E49C80C-3967-4862-BFB8-81FE0FC1ADE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E49C80C-3967-4862-BFB8-81FE0FC1ADE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E49C80C-3967-4862-BFB8-81FE0FC1ADE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E49C80C-3967-4862-BFB8-81FE0FC1ADE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04C2FBA4-10BF-4398-818E-0229332711CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C2FBA4-10BF-4398-818E-0229332711CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C2FBA4-10BF-4398-818E-0229332711CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C2FBA4-10BF-4398-818E-0229332711CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
