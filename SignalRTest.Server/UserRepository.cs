@@ -14,7 +14,7 @@ public class UserRepository
 
         UserList
             .ObserveAddChanged()
-            .Subscribe(async v => await _chatHub.Clients.AllExcept(v.ConnectionId).SendAsync("AddUser", v));
+            .Subscribe(async v => await _chatHub.Clients.All.SendAsync("AddUser", v));
         UserList
             .ObserveRemoveChanged()
             .Subscribe(async v => await _chatHub.Clients.All.SendAsync("RemoveUser", v));
@@ -29,15 +29,9 @@ public class UserRepository
         return true;
     }
 
-    public void Remove(string connectionId)
+    public void Remove(string userId)
     {
-        if (!UserList.Any(x => x.ConnectionId == connectionId)) return;
-        UserList.RemoveOnScheduler(UserList.First(x => x.ConnectionId == connectionId));
+        if (!UserList.Any(x => x.UserId == userId)) return;
+        UserList.RemoveOnScheduler(UserList.First(x => x.UserId == userId));
     }
-
-    public string? FindConnectionId(string userName)
-        => UserList.FirstOrDefault(x => x.UserName == userName)?.ConnectionId;
-
-    public string GetUserName(string connectionId)
-        => UserList.First(x => x.ConnectionId == connectionId).UserName;
 }

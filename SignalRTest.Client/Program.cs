@@ -3,15 +3,19 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Reactive.Bindings;
 using SignalRTest.Server;
 
-var connection =
-    new HubConnectionBuilder()
-        .WithUrl("http://localhost:5090/chat/hub")
-        .Build();
-
 string? connectionId = null;
 string? _userName = null;
 string? previousPrompt = null;
 List<User> userList = new();
+ReactivePropertySlim<string?> accessToken = new();
+
+var connection =
+    new HubConnectionBuilder()
+        .WithUrl("http://localhost:5090/hubs/chat", options =>
+        {
+            options.AccessTokenProvider = () => Task.FromResult(accessToken.Value);
+        })
+        .Build();
 
 // イベントの設定
 
@@ -49,25 +53,21 @@ connection.On<Message>("ReceiveMessage", message =>
     if (previousPrompt != null) Console.WriteLine(previousPrompt);
 });
 
-// 接続開始
-_ = Task.Run(() => connection.StartAsync());
-
-while (connectionId is null) await Task.Delay(30);
-
 while (_userName is null)
 {
     Console.WriteLine("ようこそ。ユーザー名を入力してください。");
 
     if (Console.ReadLine() is { Length: > 0 } userName)
     {
-        // REST APIでユーザー名とConnection Idを紐付けさせる
+        // REST APIでユーザーを登録してログイン
         var httpClient = new HttpClient();
-        var response = await httpClient.PostAsJsonAsync("http://localhost:5090/login", new User(connectionId, userName));
-        var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        if (result?.IsSucceed == true)
+        var response = await httpClient.PostAsJsonAsync("http://localhost:5090/login", new User(Guid.NewGuid().ToString(), userName));
+        var result = await response.Content.ReadFromJsonAsync<LoginResult>();
+        if (result?.Token != null)
         {
             Console.WriteLine("ログインしました。");
             _userName = userName;
+            accessToken.Value = result.Token;
         }
         else
         {
@@ -75,6 +75,9 @@ while (_userName is null)
         }
     }
 }
+
+// 接続開始
+_ = Task.Run(() => connection.StartAsync());
 
 if (!userList.Any(x => x.UserName != _userName))
 {

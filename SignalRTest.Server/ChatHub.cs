@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace SignalRTest.Server;
 
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ChatHub : Hub
 {
     private readonly UserRepository _userRepository;
@@ -18,8 +21,7 @@ public class ChatHub : Hub
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        var currentUser = _userRepository.UserList.First(x => x.ConnectionId == Context.ConnectionId);
-        _userRepository.Remove(Context.ConnectionId);
+        _userRepository.Remove(Context.UserIdentifier!);
         return base.OnDisconnectedAsync(exception);
     }
 
@@ -28,15 +30,18 @@ public class ChatHub : Hub
 
     public async Task SendMessage(string userName, string message)
     {
-        var connectionId = _userRepository.FindConnectionId(userName);
-        if (connectionId is null)
+        var sentFrom = _userRepository.UserList.First(x => x.UserId == Context.UserIdentifier);
+        var sentTo = _userRepository.UserList.FirstOrDefault(x => x.UserName == userName);
+        if (sentTo is null)
         {
             await Clients.Caller.SendAsync("Error", Error.UserNotFound);
             return;
         }
 
-        var sentFrom = _userRepository.GetUserName(Context.ConnectionId);
-        await Clients.Client(connectionId).SendAsync("ReceiveMessage", new Message(message, sentFrom));
+        Console.WriteLine($"Sent from: {sentFrom.UserName}");
+        Console.WriteLine($"Sent to: {sentTo.UserName}");
+        await Clients.User(sentTo.UserId).SendAsync("ReceiveMessage", new Message(message, sentFrom.UserName));
+
         await Clients.Caller.SendAsync("Success");
     }
 }
